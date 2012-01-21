@@ -7,12 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Aizatto\Bundle\FacebookBundle\Entity\Users
- *
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="facebook_friends")
  */
-class FacebookFriend
+abstract class FacebookFriend
 {
 
   /**
@@ -92,7 +88,6 @@ class FacebookFriend
    */
   public function setCreatedAt($createdAt)
   {
-    $this->setUpdatedAt($createdAt);
     $this->created_at = $createdAt;
     return $this;
   }

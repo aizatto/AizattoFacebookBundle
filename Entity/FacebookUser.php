@@ -7,14 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Aizatto\Bundle\FacebookBundle\Entity\Users
- *
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="facebook_users")
  */
-class FacebookUser
+abstract class FacebookUser
 {
-
   /**
    * @var integer $id
    *
@@ -27,7 +22,7 @@ class FacebookUser
   /**
    * @var bigint $facebook_id
    *
-   * @ORM\Column(name="facebook_id", type="bigint", nullable=false)
+   * @ORM\Column(name="facebook_id", type="bigint", nullable=false, unique="true")
    */
   protected $facebook_id;
 
@@ -58,6 +53,13 @@ class FacebookUser
    * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
    */
   protected $first_name;
+
+  /**
+   * @var string $middle_name
+   *
+   * @ORM\Column(name="middle_name", type="string", length=255, nullable=true)
+   */
+  protected $middle_name;
 
   /**
    * @var string $last_name
@@ -118,7 +120,7 @@ class FacebookUser
   /**
    * @var string $access_token
    *
-   * @ORM\Column(name="access_token", type="string", length=255, nullable=false)
+   * @ORM\Column(name="access_token", type="string", length=255, nullable=true)
    */
   protected $access_token;
 
@@ -144,6 +146,22 @@ class FacebookUser
   protected $birthday;
 
   /**
+   * @var float $sortable_birthday
+   *
+   * Represent the month and birthday as a float number.
+   *
+   * Month is represents by whole number
+   * Day represents the decimal number
+   *
+   * Example: 24th July is represented as 7.24
+   *
+   * We do it this way because it makes it easy to sort.
+   *
+   * @ORM\Column(name="sortable_birthday", type="decimal", precision="4", scale="2", nullable=true)
+   */
+  protected $sortable_birthday;
+
+  /**
    * @var integer $age
    *
    * @ORM\Column(name="age", type="integer", nullable=true)
@@ -156,6 +174,34 @@ class FacebookUser
    * @ORM\Column(name="verified", type="boolean", nullable=true)
    */
   protected $verified;
+
+  /**
+   * @var string $pic
+   *
+   * @ORM\Column(name="pic", type="string", length=255, nullable=true)
+   */
+  protected $pic;
+
+  /**
+   * @var string $pic_small
+   *
+   * @ORM\Column(name="pic_small", type="string", length=255, nullable=true)
+   */
+  protected $pic_small;
+
+  /**
+   * @var string $pic_big
+   *
+   * @ORM\Column(name="pic_big", type="string", length=255, nullable=true)
+   */
+  protected $pic_big;
+
+  /**
+   * @var string $pic_square
+   *
+   * @ORM\Column(name="pic_square", type="string", length=255, nullable=true)
+   */
+  protected $pic_square;
 
   /**
    * Get id
@@ -270,6 +316,27 @@ class FacebookUser
   public function getFirstName()
   {
     return $this->first_name;
+  }
+
+  /**
+   * Set middle_name
+   *
+   * @param string $middle_name
+   */
+  public function setMiddleName($middle_name)
+  {
+    $this->middle_name = $middle_name;
+    return $this;
+  }
+
+  /**
+   * Get middle_name
+   *
+   * @return string 
+   */
+  public function getMiddleName()
+  {
+    return $this->middle_name;
   }
 
   /**
@@ -545,6 +612,27 @@ class FacebookUser
   }
 
   /**
+   * Set sortable_birthday
+   *
+   * @param decimal $sortable_birthday
+   */
+  public function setSortableBirthday($sortable_birthday)
+  {
+    $this->sortable_birthday = $sortable_birthday;
+    return $this;
+  }
+
+  /**
+   * Get sortable_birthday
+   *
+   * @return decimal 
+   */
+  public function getSortableBirthday()
+  {
+    return $this->sortable_birthday;
+  }
+
+  /**
    * Set age
    *
    * @param boolean $age
@@ -581,6 +669,7 @@ class FacebookUser
       ->setFacebookID(idx($data, 'id'))
       ->setName(idx($data, 'name'))
       ->setFirstName(idx($data, 'first_name'))
+      ->setMiddleName(idx($data, 'middle_name'))
       ->setLastName(idx($data, 'last_name'))
       ->setLink(idx($data, 'link'))
       ->setUsername(idx($data, 'username'))
@@ -601,12 +690,95 @@ class FacebookUser
 
     if (idx($data, 'birthday')) {
       $birthday = DateTime::createFromFormat('m/d/Y', $data['birthday']);
+      $month = (int) $birthday->format('n');
+      $day = (int) $birthday->format('j');
+
       $this
         ->setBirthday($birthday)
+        ->setSortableBirthday($month + ($day / 100))
         ->setAge(id(new DateTime())->diff($birthday)->y);
     }
 
     return $this;
+  }
+
+  public function setDataFromFQL($data) {
+    if ($value = idx($data, 'uid')) {
+      $this->setFacebookID($value);
+    }
+
+    if ($value = idx($data, 'username')) {
+      $this->setUsername($value);
+    }
+
+    if ($value = idx($data, 'name')) {
+      $this->setName($value);
+    }
+
+    if ($value = idx($data, 'first_name')) {
+      $this->setFirstName($value);
+    }
+
+    if ($value = idx($data, 'middle_name')) {
+      $this->setMiddleName($value);
+    }
+
+    if ($value = idx($data, 'last_name')) {
+      $this->setLastName($value);
+    }
+
+    if ($value = idx($data, 'sex')) {
+      $this->setGender($value);
+    }
+
+    if ($value = idx($data, 'locale')) {
+      $this->setLocale($value);
+    }
+
+    if ($value = idx($data, 'locale')) {
+      $this->setLocale($value);
+    }
+
+    if ($value = idx($data, 'profile_url')) {
+      $this->setLink($value);
+    }
+
+    if ($value = idx($data, 'birthday_date')) {
+      list($month, $day, $year) = explode('/', $value.'///');
+
+      $day = (int) $day;
+      if ($day) {
+        $month = (int) $month;
+
+        $value = $month + ($day / 100);
+        $this->setSortableBirthday($value);
+
+        $year = (int) $year;
+        if ($year) {
+          $value = id(new DateTime())->setDate($year, $month, $day);
+          $this
+            ->setBirthday($value)
+            ->setAge(id(new DateTime())->diff($value)->y);
+        }
+      }
+    }
+
+    if ($value = idx($data, 'hometown_location')) {
+      $this
+        ->setHometownID(idx($value, 'id'))
+        ->SetHometownName(idx($value, 'name'));
+    }
+
+    if ($value = idx($data, 'current_location')) {
+      $this
+        ->setLocationID(idx($value, 'id'))
+        ->setLocationName(idx($value, 'name'));
+    }
+
+    if ($value = idx($data, 'verified')) {
+      $this->setVerified($value);
+    }
+
   }
 
 }
