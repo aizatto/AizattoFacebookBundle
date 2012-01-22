@@ -664,7 +664,7 @@ abstract class FacebookUser
     return $this->verified;
   }
 
-  public function setData($data) {
+  public function setDataFromAPI($data) {
     $this
       ->setFacebookID(idx($data, 'id'))
       ->setName(idx($data, 'name'))
