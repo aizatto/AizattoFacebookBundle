@@ -1,0 +1,3 @@
+AizattoFacebookBundleFacebookController:
+  resource: "@AizattoFacebookBundle/Controller/FacebookController.php"
+  type:     annotation
