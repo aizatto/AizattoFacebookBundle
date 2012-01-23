@@ -13,7 +13,7 @@ class FacebookController extends Controller
 {
 
   /**
-   * @Route("/channel")
+   * @Route("/channel", name="facebook_channel")
    */
   public function channelAction()
   {
@@ -27,7 +27,7 @@ class FacebookController extends Controller
 
   /**
    * TODO ensure that the referer is coming from the same domain
-   * @Route("/login")
+   * @Route("/login", name="facebook_login")
    */
   public function loginAction()
   {
@@ -41,7 +41,7 @@ class FacebookController extends Controller
   }
 
   /**
-   * @Route("/login/check")
+   * @Route("/login/check", name="facebook_login_check")
    */
   public function loginCheckAction()
   {
@@ -50,7 +50,7 @@ class FacebookController extends Controller
 
   /**
    * TODO ensure that the referer is coming from the same domain
-   * @Route("/logout")
+   * @Route("/logout", name="facebook_logout")
    */
   public function logoutAction()
   {
