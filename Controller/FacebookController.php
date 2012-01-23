@@ -34,7 +34,7 @@ class FacebookController extends Controller
     if (isset($_SERVER['HTTP_REFERER'])) {
       $url = $_SERVER['HTTP_REFERER'];
     } else {
-      $url = '/';
+      $url = $this->getRequest()->getBaseURL();
     }
 
     return new RedirectResponse($url, 302);
@@ -66,7 +66,7 @@ class FacebookController extends Controller
     if (isset($_SERVER['HTTP_REFERER'])) {
       $url = $_SERVER['HTTP_REFERER'];
     } else {
-      $url = '/';
+      $url = $this->getRequest()->getBaseURL();
     }
 
     $response = new RedirectResponse($url, 302);
