@@ -1,0 +1,28 @@
+parameters:
+  aizatto_facebook.provider.class: Aizatto\Bundle\FacebookBundle\Security\User\Provider\FacebookProvider
+  aizatto_facebook.manager.class: Aizatto\Bundle\FacebookBundle\Entity\FacebookManager
+
+services:
+  aizatto_facebook.provider: 
+    class: %aizatto_facebook.provider.class%
+    arguments:
+      - @facebook
+      - @doctrine.orm.entity_manager
+      - @aizatto_facebook.manager
+      - %aizatto_facebook.user_class%
+      - %aizatto_facebook.facebook_user_class%
+      - %kernel.debug%
+
+  aizatto_facebook.manager:
+    class: %aizatto_facebook.manager.class%
+    arguments:
+      - @facebook
+      - @doctrine.orm.entity_manager
+      - @logger
+      - %aizatto_facebook.facebook_user_class%
+      - %aizatto_facebook.facebook_friend_class%
+
+  aizatto_facebook.logout.success_handler:
+    class: Aizatto\Bundle\FacebookBundle\Security\LogoutSuccessHandler
+    arguments:
+      - @facebook
