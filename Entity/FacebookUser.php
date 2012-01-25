@@ -665,28 +665,63 @@ abstract class FacebookUser
   }
 
   public function setDataFromAPI($data) {
-    $this
-      ->setFacebookID(idx($data, 'id'))
-      ->setName(idx($data, 'name'))
-      ->setFirstName(idx($data, 'first_name'))
-      ->setMiddleName(idx($data, 'middle_name'))
-      ->setLastName(idx($data, 'last_name'))
-      ->setLink(idx($data, 'link'))
-      ->setUsername(idx($data, 'username'))
-      ->setEmail(idx($data, 'email'))
-      ->setGender(idx($data, 'gender'))
-      ->setLocale(idx($data, 'locale'))
-      ->setVerified(idx($data, 'verified'));
+    if ($value = idx($data, 'id')) {
+      $this->setFacebookID($value);
+    }
+
+    if ($value = idx($data, 'name')) {
+      $this->setName($value);
+    }
+
+    if ($value = idx($data, 'first_name')) {
+      $this->setFirstName($value);
+    }
+
+    if ($value = idx($data, 'middle_name')) {
+      $this->setMiddleName($value);
+    }
+
+    if ($value = idx($data, 'last_name')) {
+      $this->setLastName($value);
+    }
+
+    if ($value = idx($data, 'link')) {
+      $this->setLink($value);
+    }
+
+    if ($value = idx($data, 'username')) {
+      $this->setUsername($value);
+    }
+
+    if ($value = idx($data, 'email')) {
+      $this->setEmail($value);
+    }
+
+    if ($value = idx($data, 'gender')) {
+      $this->setGender($value);
+    }
+
+    if ($value = idx($data, 'locale')) {
+      $this->setLocale($value);
+    }
+
+    if ($value = idx($data, 'verified')) {
+      $this->setVerified($value);
+    }
 
     $hometown = idx($data, 'hometown', array());
-    $this
-      ->setHometownID(idx($hometown, 'id'))
-      ->setHometownName(idx($hometown, 'name'));
+    if ($hometown) {
+      $this
+        ->setHometownID(idx($hometown, 'id'))
+        ->setHometownName(idx($hometown, 'name'));
+    }
 
     $location = idx($data, 'location', array());
-    $this
-      ->setLocationID(idx($location, 'id'))
-      ->setLocationName(idx($location, 'name'));
+    if ($location) {
+      $this
+        ->setLocationID(idx($location, 'id'))
+        ->setLocationName(idx($location, 'name'));
+    }
 
     if (idx($data, 'birthday')) {
       $birthday = DateTime::createFromFormat('m/d/Y', $data['birthday']);

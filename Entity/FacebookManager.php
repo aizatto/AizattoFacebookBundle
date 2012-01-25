@@ -4,8 +4,9 @@ namespace Aizatto\Bundle\FacebookBundle\Entity;
 
 use Aizatto\Bundle\FacebookBundle\Entity\FacebookUser;
 use Aizatto\Bundle\FacebookBundle\Entity\FacebookFriend;
-use Doctrine\ORM\EntityManager;
 use BaseFacebook;
+use Doctrine\ORM\EntityManager;
+use Symfony\Bridge\Monolog\Logger;
 
 class FacebookManager {
 
@@ -18,7 +19,7 @@ class FacebookManager {
 
   public function __construct(BaseFacebook $facebook,
                               EntityManager $em,
-                              $logger,
+                              Logger $logger,
                               $facebook_user_class,
                               $facebook_friend_class) {
     $this->em = $em;
@@ -41,19 +42,12 @@ class FacebookManager {
   }
 
   public function updateFacebookUserThroughFQL(FacebookUser $facebook_user) {
-    $fql = $this->getUserFQL("me()");
+    $fql = $this->getUserFQL("uid = me()");
     $data = $this->facebook->api('/fql', array(
       'q' => $fql,
       'access_token' => $facebook_user->getAccessToken(),
     ));
     $facebook_user->setDataFromFQL($data);
-  }
-
-  private function updateFriendsAndCheckedAt(User $user) {
-    $user->setCheckedFacebookAt(new \DateTime());
-    $this->em->persist($user);
-    $this->em->flush();
-    $this->updateFriends($user);
   }
 
   /**
@@ -70,7 +64,7 @@ class FacebookManager {
       ->findOneBy(array('facebook_id' => $facebook_id));
 
     try {
-      $fql = $this->getUserFQL("SELECT uid2 FROM friend WHERE uid1 = me()");
+      $fql = $this->getUserFQL("uid IN (SELECT uid2 FROM friend WHERE uid1 = me()");
       $data = $this->facebook->api('/fql', array(
         'q' => $fql,
         'access_token' => $data->getAccessToken(),
@@ -130,14 +124,14 @@ class FacebookManager {
     $this->em->flush();
   }
 
-  private function getUserFQL($subquery) {
+  private function getUserFQL($conditions) {
     return <<<SQL
       SELECT
         uid, name, first_name, middle_name, last_name, username, birthday_date,
-        sex, locale, current_location, hometown_location, profile_url, verified
+        sex, locale, current_location, hometown_location, profile_url, verified,
         pic, pic_small, pic_big, pic_square
       FROM user
-      WHERE uid IN ($subquery)
+      WHERE {$conditions}
 SQL;
   }
 
