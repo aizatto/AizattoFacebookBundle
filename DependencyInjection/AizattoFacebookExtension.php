@@ -24,6 +24,10 @@ class AizattoFacebookExtension extends Extension
     $config = $this->processConfiguration($configuration, $configs);
     foreach(array('user', 'facebook_user', 'facebook_friend') as $key) {
       $key = $key.'_class';
+      if (!isset($config[$key])) {
+        continue;
+      }
+
       $value = $config[$key];
       $key = 'aizatto_facebook.'.$key;
       $container->setParameter($key, $value);
