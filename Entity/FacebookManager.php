@@ -64,7 +64,7 @@ class FacebookManager {
       ->findOneBy(array('facebook_id' => $facebook_id));
 
     try {
-      $fql = $this->getUserFQL("uid IN (SELECT uid2 FROM friend WHERE uid1 = me()");
+      $fql = $this->getUserFQL("uid IN (SELECT uid2 FROM friend WHERE uid1 = me())");
       $data = $this->facebook->api('/fql', array(
         'q' => $fql,
         'access_token' => $data->getAccessToken(),
@@ -75,13 +75,14 @@ class FacebookManager {
     }
 
     if ($data['data']) {
-      $facebook_users = $this->em
-        ->getRepository($this->facebook_friend_class)
+      $query = $this->em
+        ->getRepository($this->facebook_user_class)
         ->createQueryBuilder('u')
         ->where('u.facebook_id IN (:ids)')
         ->setParameter('ids', ipull($data['data'], 'uid'))
-        ->getQuery()
-        ->getResult();
+        ->getQuery();
+
+      $facebook_users = $query->getResult();
       $facebook_users = mpull($facebook_users, null, 'getFacebookID');
 
       foreach ($data['data'] as $friend) {
@@ -90,7 +91,8 @@ class FacebookManager {
         if (isset($facebook_users[$uid])) {
           $facebook_user = $facebook_users[$uid];
         } else {
-          $facebook_users[$uid] = $facebook_user = newv($this->facbook_user_class);
+          $facebook_users[$uid] = $facebook_user =
+            newv($this->facebook_user_class, array());
         }
         $facebook_user->setDataFromFQL($friend);
         $this->em->persist($facebook_user);
@@ -113,7 +115,7 @@ class FacebookManager {
     }
 
     foreach ($add as $facebook_user) {
-      $friend = id(new FacebookFriend())
+      $friend = newv($this->facebook_friend_class, array())
         ->setFacebookID($facebook_id)
         ->setFriendID($facebook_user->getFacebookID());
       $this->em->persist($friend);
