@@ -11,6 +11,8 @@ use FOS\UserBundle\Entity\User as BaseUser;
 abstract class User extends BaseUser
 {
 
+  const ROLE_FACEBOOK = 'ROLE_FACEBOOK';
+
   /**
    * @var integer $facebook_id
    *
