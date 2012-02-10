@@ -814,6 +814,105 @@ abstract class FacebookUser
       $this->setVerified($value);
     }
 
+    if ($value = idx($data, 'pic_square')) {
+      $this->setPicSquare($value);
+    }
+
+    if ($value = idx($data, 'pic_big')) {
+      $this->setPicBig($value);
+    }
+
+    if ($value = idx($data, 'pic_small')) {
+      $this->setPicSmall($value);
+    }
+
+    if ($value = idx($data, 'pic')) {
+      $this->setPic($value);
+    }
+  }
+
+  /**
+   * Set pic_square
+   *
+   * @param string $picSquare
+   */
+  public function setPicSquare($value)
+  {
+    $this->pic_square = $value;
+    return $this;
+  }
+
+  /**
+   * Get pic_square
+   *
+   * @return string 
+   */
+  public function getPicSquare()
+  {
+    return $this->pic_square;
+  }
+
+  /**
+   * Set pic_big
+   *
+   * @param string $picBig
+   */
+  public function setPicBig($value)
+  {
+    $this->pic_big = $value;
+    return $this;
+  }
+
+  /**
+   * Get pic_big
+   *
+   * @return string 
+   */
+  public function getPicBig()
+  {
+    return $this->pic_big;
+  }
+
+  /**
+   * Set pic_small
+   *
+   * @param string $picSmall
+   */
+  public function setPicSmall($value)
+  {
+    $this->pic_small = $value;
+    return $this;
+  }
+
+  /**
+   * Get pic_small
+   *
+   * @return string 
+   */
+  public function getPicSmall()
+  {
+    return $this->pic_small;
+  }
+
+  /**
+   * Set pic
+   *
+   * @param string $pic
+   */
+  public function setPic($value)
+  {
+    $this->pic = $value;
+    return $this;
+  }
+
+  /**
+   * Get pic
+   *
+   * @return string 
+   */
+  public function getPic()
+  {
+    return $this->pic;
   }
 
 }
