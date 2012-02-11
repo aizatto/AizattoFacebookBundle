@@ -47,7 +47,7 @@ class FacebookManager {
       'q' => $fql,
       'access_token' => $facebook_user->getAccessToken(),
     ));
-    $facebook_user->setDataFromFQL($data);
+    $facebook_user->setDataFromFQL($data['data'][0]);
   }
 
   /**
