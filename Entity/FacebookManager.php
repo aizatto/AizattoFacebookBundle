@@ -112,6 +112,7 @@ class FacebookManager {
 
     foreach ($remove as $friend) {
       $this->em->remove($friend);
+      unset($facebook_users[$friend->getFacebookID()]);
     }
 
     foreach ($add as $facebook_user) {
@@ -119,11 +120,13 @@ class FacebookManager {
         ->setFacebookID($facebook_id)
         ->setFriendID($facebook_user->getFacebookID());
       $this->em->persist($friend);
+      $friends[$facebook_user->getFacebookID()] = $facebook_user;
     }
 
     $user->setUpdatedFacebookAt(new \Datetime());
     $this->em->persist($user);
     $this->em->flush();
+    return $facebook_users;
   }
 
   private function getUserFQL($conditions) {
