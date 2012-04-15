@@ -7,6 +7,8 @@ use FOS\UserBundle\Entity\User as BaseUser;
 
 /**
  * Aizatto\Bundle\FacebookBundle\Entity\User;
+ *
+ * @ORM\HasLifecycleCallbacks()
  */
 abstract class User extends BaseUser
 {

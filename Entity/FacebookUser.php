@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Aizatto\Bundle\FacebookBundle\Entity\Users
+ *
+ * @ORM\HasLifecycleCallbacks()
  */
 abstract class FacebookUser
 {

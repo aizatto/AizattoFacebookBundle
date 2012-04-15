@@ -80,13 +80,13 @@ class FacebookProvider implements UserManagerInterface
         ->findOneBy(array('facebook_id' => $facebook_id));
 
       if (!$fbuser) {
-        $fbuser = newv($this->facebook_user_class);
+        $fbuser = newv($this->facebook_user_class, array());
       }
       
       $fbuser->setAccessToken($this->facebook->getAccessToken());
       $this->facebook_manager->updateFacebookUser($fbuser);
 
-      $user = id(new User())
+      $user = id(newv($this->user_class, array()))
         ->setPassword('')
         ->setUsername($fbuser->getUsername() ?: '')
         ->setEmail($fbuser->getEmail())
@@ -96,7 +96,8 @@ class FacebookProvider implements UserManagerInterface
         ->setBirthday($fbuser->getBirthday())
         ->setAge($fbuser->getAge())
         ->setEnabled(true)
-        ->setFacebookID($fbuser->getFacebookID());
+        ->setFacebookID($fbuser->getFacebookID())
+        ->setCreatedAtValue();
 
       $user->addRole('ROLE_FACEBOOK');
       $user->addRole('ROLE_USER');
@@ -109,7 +110,9 @@ class FacebookProvider implements UserManagerInterface
       if (true || $this->debug) {
       }
 
-        var_dump(__FILE__);
+        var_dump($e->getMessage());
+        var_dump($e->getCode());
+        var_dump($e->getType());
         exit();
       throw $e;
     }
